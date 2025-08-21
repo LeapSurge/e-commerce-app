@@ -1,0 +1,47 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.banner {
+  position: relative;
+}
+.banner--title {
+  position: absolute;
+  top: 30%;
+  right: 0;
+  width: 100%;
+  color: white;
+  font-size: 56px;
+  text-align: center;
+  background: rgba(129, 18, 18, 0.5);
+}
+/* .card--body {
+  background-color: gray;
+} */
+.boot-card:hover .card--cover {
+  box-shadow: 2px 2px 6px rgba(9, 9, 80, 0.2);
+}
+.boot-card:hover .ant-card-meta-title {
+  color: rgb(45, 45, 165);
+  text-decoration: underline;
+}
+.boot-card:hover .ant-card-meta-description {
+  text-decoration: underline;
+}
+
+.details--original-price {
+  text-decoration: line-through;
+}
+.details--btn-wrapper {
+  margin-block-start: 16px;
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
+}
+.hero-image {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: cover;
+  overflow: hidden;
+}
