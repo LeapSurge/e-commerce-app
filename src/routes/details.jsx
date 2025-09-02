@@ -231,7 +231,7 @@ function findSku(specs, skuList) {
       sku.specs.length === specs.length &&
       sku.specs.every((value, index) => value === specs[index])
   );
-  console.log(matchedSku);
+  // console.log(matchedSku);
   return matchedSku;
 }
 

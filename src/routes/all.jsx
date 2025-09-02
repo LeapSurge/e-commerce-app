@@ -1,13 +1,13 @@
-import { Breadcrumb } from "antd";
+import { Breadcrumb, Flex } from "antd";
 import { Link, Outlet } from "react-router-dom";
 import { getBootNameById } from "./details";
 export default function All() {
   return (
-    <>
+    <Flex vertical gap="middle">
       <h1>Shop All</h1>
       <Breadcrumb itemRender={itemRender} items={routes}></Breadcrumb>
       <Outlet />
-    </>
+    </Flex>
   );
 }
 
