@@ -1,10 +1,10 @@
 import { Card } from "antd";
 const { Meta } = Card;
-export default function BootCard({ boot }) {
+export default function productCard({ product }) {
   return (
     <Card
-      cover={boot.images?.[0]}
-      className="boot-card"
+      cover={product.images?.[0]}
+      className="product-card"
       classNames={{ cover: "card--cover", body: "card--body" }}
       styles={{
         cover: {
@@ -13,7 +13,7 @@ export default function BootCard({ boot }) {
         },
       }}
     >
-      <Meta title={boot.name} description={boot?.description} />
+      <Meta title={product.name} description={product?.description} />
     </Card>
   );
 }

@@ -1,5 +1,5 @@
 import { Row, Col } from "antd";
-import BootCard from "../components/bootcard";
+import ProductCard from "../components/productcard";
 import heroImage from "../assets/June_hero.png";
 const promotionBoots = [
   {
@@ -44,7 +44,7 @@ export default function Index() {
           {promotionBoots.map((boot, index) => (
             <Col key={index} xs={24} sm={12} lg={6}>
               {/* 使用能响应断点的卡片组件 */}
-              <BootCard boot={boot} />
+              <ProductCard product={boot} />
             </Col>
           ))}
         </Row>

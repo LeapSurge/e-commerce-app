@@ -1,54 +1,60 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { Pagination, Row, Col, Select, Flex, Checkbox, Input } from "antd";
-import BootCard from "../components/bootcard";
-import { useState, useEffect, useMemo } from "react";
-import useDebounce from "../hooks/usedebounce";
-
-async function fetchList(params) {
-  const url = new URL("http://localhost:3000/boots");
-
-  url.search = params.toString();
-  // console.log(url.search);
-
-  const response = await fetch(url);
-
-  return response.json();
-}
+import ProductCard from "../components/productcard";
+import { useState, useEffect } from "react";
+import useProducts from "../hooks/useproducts";
+import { useDebounce } from "../hooks/useDebounce";
 
 export default function AllList() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [boots, setBoots] = useState([]);
-  const sortOrder = searchParams.get("_order") || "default";
-  const brands = searchParams.getAll("brand");
-  const queryParam = searchParams.get("q") || "";
-  const [query, setQuery] = useState(queryParam);
-  const debouncedQuery = useDebounce(query, 500);
+  const { isLoading, error, products } = useProducts();
+  const [inputValue, setInputValue] = useState(searchParams.get("q") || "");
+  const sortValue = searchParams.get("_order") || "default";
+  const brands = searchParams.getAll("_brand") || [];
+  const debouncedQuery = useDebounce(inputValue, 500);
 
-  const filters = useMemo(() => {
-    return { brand: brands };
-  }, [brands.join(",")]);
+  const handleSortChange = (value) => {
+    setSearchParams((prevParams) => {
+      // 1. prevParams是当前的SearchParams，创建一个可修改的副本
+      const newParams = new URLSearchParams(prevParams);
 
-  useEffect(() => {
-    let ignore = false;
-
-    const loadList = async () => {
-      if (!ignore) {
-        setBoots(await fetchList(searchParams));
+      // 2. 默认时删除_sort, 非默认添加_sort
+      if (value !== "default") {
+        newParams.set("_sort", "price");
+        newParams.set("_order", value);
+      } else {
+        newParams.delete("_sort");
+        newParams.delete("_order");
       }
-    };
-    // console.log(filters);
-    loadList();
-    return () => (ignore = true);
-  }, [sortOrder, filters, queryParam]);
+
+      // 3. 返回新的params对象
+      return newParams;
+    });
+  };
+
+  const handleFilterChange = (filterType, list) => {
+    setSearchParams((p) => {
+      const newParams = new URLSearchParams(p);
+      newParams.delete(filterType);
+      if (list && list.length > 0) {
+        list.forEach((e) => newParams.append(filterType, e));
+      }
+      return newParams;
+    });
+  };
+
+  const handleSearchChange = (e) => {
+    const newQuery = e.target.value;
+    setInputValue(newQuery);
+  };
 
   useEffect(() => {
-    // console.log(query);
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
-      if (!debouncedQuery) {
-        newParams.delete("q");
-      } else {
+      if (debouncedQuery) {
         newParams.set("q", debouncedQuery);
+      } else {
+        newParams.delete("q");
       }
       return newParams;
     });
@@ -58,30 +64,13 @@ export default function AllList() {
     <Flex vertical gap="small" className="all-list">
       <Flex align="center" gap="middle" justify="space-between">
         <Select
-          value={sortOrder}
           options={[
             { label: "默认排序", value: "default" },
             { label: "价格从高到低", value: "desc" },
             { label: "价格从低到高", value: "asc" },
           ]}
-          onChange={(value) => {
-            setSearchParams((prevParams) => {
-              // 1. prevParams是当前的SearchParams，创建一个可修改的副本
-              const newParams = new URLSearchParams(prevParams);
-
-              // 2. 默认时删除_sort, 非默认添加_sort
-              if (value !== "default") {
-                newParams.set("_sort", "price");
-                newParams.set("_order", value);
-              } else {
-                newParams.delete("_sort");
-                newParams.delete("_order");
-              }
-
-              // 3. 返回新的params对象
-              return newParams;
-            });
-          }}
+          value={sortValue}
+          onChange={handleSortChange}
           style={{ width: 130 }}
         />
         <Flex className="filter--item">
@@ -90,31 +79,26 @@ export default function AllList() {
           </div>
           <Checkbox.Group
             options={["Clarks", "Dr. Martens", "UGG"]}
-            value={brands}
-            onChange={(selected) => {
-              setSearchParams((p) => {
-                const newParams = new URLSearchParams(p);
-                newParams.delete("brand");
-                selected.forEach((brand) => newParams.append("brand", brand));
-                return newParams;
-              });
+            onChange={(checked) => {
+              handleFilterChange("_brand", checked);
             }}
+            value={brands}
           />
         </Flex>
         <Input.Search
           placeholder="搜索商品"
           allowClear
           style={{ width: 200 }}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={inputValue}
+          onChange={handleSearchChange}
           // loading
         />
       </Flex>
       <Row gutter={[16, 16]}>
-        {boots.map((boot) => (
-          <Col key={boot.id} xs={24} sm={12} lg={6}>
-            <Link to={`/all/${boot.id}`}>
-              <BootCard boot={boot} />
+        {products.map((product) => (
+          <Col key={product.id} xs={24} sm={12} lg={6}>
+            <Link to={`/all/${product.id}`}>
+              <ProductCard product={product} />
             </Link>
           </Col>
         ))}
