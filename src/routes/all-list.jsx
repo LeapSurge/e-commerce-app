@@ -1,13 +1,14 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { Pagination, Row, Col, Select, Flex, Checkbox } from "antd";
+import { Pagination, Row, Col, Select, Flex, Checkbox, Input } from "antd";
 import BootCard from "../components/bootcard";
 import { useState, useEffect, useMemo } from "react";
+import useDebounce from "../hooks/usedebounce";
 
 async function fetchList(params) {
   const url = new URL("http://localhost:3000/boots");
 
   url.search = params.toString();
-  console.log(url.search);
+  // console.log(url.search);
 
   const response = await fetch(url);
 
@@ -15,10 +16,13 @@ async function fetchList(params) {
 }
 
 export default function AllList() {
-  const [boots, setBoots] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [boots, setBoots] = useState([]);
   const sortOrder = searchParams.get("_order") || "default";
   const brands = searchParams.getAll("brand");
+  const queryParam = searchParams.get("q") || "";
+  const [query, setQuery] = useState(queryParam);
+  const debouncedQuery = useDebounce(query, 500);
 
   const filters = useMemo(() => {
     return { brand: brands };
@@ -32,31 +36,27 @@ export default function AllList() {
         setBoots(await fetchList(searchParams));
       }
     };
-    console.log(filters);
+    // console.log(filters);
     loadList();
     return () => (ignore = true);
-  }, [sortOrder, filters]);
+  }, [sortOrder, filters, queryParam]);
+
+  useEffect(() => {
+    // console.log(query);
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      if (!debouncedQuery) {
+        newParams.delete("q");
+      } else {
+        newParams.set("q", debouncedQuery);
+      }
+      return newParams;
+    });
+  }, [debouncedQuery]);
 
   return (
     <Flex vertical gap="small" className="all-list">
-      <Flex align="center" gap="middle">
-        <Flex className="filter--item">
-          <div className="title" gap="small">
-            品牌：
-          </div>
-          <Checkbox.Group
-            options={["Clarks", "Dr. Martens", "UGG"]}
-            value={brands}
-            onChange={(selected) => {
-              setSearchParams((p) => {
-                const newParams = new URLSearchParams(p);
-                newParams.delete("brand");
-                selected.forEach((brand) => newParams.append("brand", brand));
-                return newParams;
-              });
-            }}
-          />
-        </Flex>
+      <Flex align="center" gap="middle" justify="space-between">
         <Select
           value={sortOrder}
           options={[
@@ -83,6 +83,31 @@ export default function AllList() {
             });
           }}
           style={{ width: 130 }}
+        />
+        <Flex className="filter--item">
+          <div className="title" gap="small">
+            品牌：
+          </div>
+          <Checkbox.Group
+            options={["Clarks", "Dr. Martens", "UGG"]}
+            value={brands}
+            onChange={(selected) => {
+              setSearchParams((p) => {
+                const newParams = new URLSearchParams(p);
+                newParams.delete("brand");
+                selected.forEach((brand) => newParams.append("brand", brand));
+                return newParams;
+              });
+            }}
+          />
+        </Flex>
+        <Input.Search
+          placeholder="搜索商品"
+          allowClear
+          style={{ width: 200 }}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          // loading
         />
       </Flex>
       <Row gutter={[16, 16]}>
