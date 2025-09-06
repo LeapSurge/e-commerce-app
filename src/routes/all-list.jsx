@@ -1,17 +1,17 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { Pagination, Row, Col, Select, Flex, Checkbox, Input } from "antd";
 import ProductCard from "../components/productcard";
-import { useState, useEffect } from "react";
 import useProducts from "../hooks/useproducts";
-import { useDebounce } from "../hooks/useDebounce";
+import { useDebouncedSearch } from "../hooks/useDebouncedSearch";
 
 export default function AllList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { isLoading, error, products } = useProducts();
-  const [inputValue, setInputValue] = useState(searchParams.get("q") || "");
+  const { inputValue, setInputValue } = useDebouncedSearch();
+
+  // 派生状态
   const sortValue = searchParams.get("_order") || "default";
-  const brands = searchParams.getAll("_brand") || [];
-  const debouncedQuery = useDebounce(inputValue, 500);
+  const brands = searchParams.getAll("brand") || [];
 
   const handleSortChange = (value) => {
     setSearchParams((prevParams) => {
@@ -19,7 +19,7 @@ export default function AllList() {
       const newParams = new URLSearchParams(prevParams);
 
       // 2. 默认时删除_sort, 非默认添加_sort
-      if (value !== "default") {
+      if (value && value !== "default") {
         newParams.set("_sort", "price");
         newParams.set("_order", value);
       } else {
@@ -48,18 +48,6 @@ export default function AllList() {
     setInputValue(newQuery);
   };
 
-  useEffect(() => {
-    setSearchParams((prev) => {
-      const newParams = new URLSearchParams(prev);
-      if (debouncedQuery) {
-        newParams.set("q", debouncedQuery);
-      } else {
-        newParams.delete("q");
-      }
-      return newParams;
-    });
-  }, [debouncedQuery]);
-
   return (
     <Flex vertical gap="small" className="all-list">
       <Flex align="center" gap="middle" justify="space-between">
@@ -80,7 +68,7 @@ export default function AllList() {
           <Checkbox.Group
             options={["Clarks", "Dr. Martens", "UGG"]}
             onChange={(checked) => {
-              handleFilterChange("_brand", checked);
+              handleFilterChange("brand", checked);
             }}
             value={brands}
           />

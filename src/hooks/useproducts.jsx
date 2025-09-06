@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import fetchProductsAPI from "../apis/fetchProductsAPI";
-import { useDebounce } from "./useDebounce.jsx";
 
 export default function useProducts() {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +16,7 @@ export default function useProducts() {
   // 筛选状态
   const filters = useMemo(
     () => ({
-      brand: searchParams.getAll("_brand"),
+      brand: searchParams.getAll("brand"),
     }),
     [searchParams]
   );
@@ -47,7 +46,7 @@ export default function useProducts() {
 
           // 处理筛选参数
           if (filters.brand && filters.brand.length > 0) {
-            filters.brand.forEach((b) => queryParams.append("_brand", b));
+            filters.brand.forEach((b) => queryParams.append("brand", b));
           }
 
           // 处理防抖的搜索
@@ -71,6 +70,7 @@ export default function useProducts() {
     getProducts();
     return () => (ignore = true);
   }, [sort, order, filters, query]);
+  console.log(products);
 
   return { isLoading, error, products };
 }
