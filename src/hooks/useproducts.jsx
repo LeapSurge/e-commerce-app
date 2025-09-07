@@ -49,7 +49,7 @@ export default function useProducts() {
             filters.brand.forEach((b) => queryParams.append("brand", b));
           }
 
-          // 处理防抖的搜索
+          // 处理搜索
           if (query && query !== "default") {
             queryParams.append("q", query);
           }
@@ -70,7 +70,7 @@ export default function useProducts() {
     getProducts();
     return () => (ignore = true);
   }, [sort, order, filters, query]);
-  console.log(products);
+  // console.log(products);
 
   return { isLoading, error, products };
 }

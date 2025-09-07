@@ -1,5 +1,15 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { Pagination, Row, Col, Select, Flex, Checkbox, Input } from "antd";
+import {
+  Pagination,
+  Row,
+  Col,
+  Select,
+  Flex,
+  Checkbox,
+  Input,
+  Skeleton,
+  Empty,
+} from "antd";
 import ProductCard from "../components/productcard";
 import useProducts from "../hooks/useproducts";
 import { useDebouncedSearch } from "../hooks/useDebouncedSearch";
@@ -82,15 +92,26 @@ export default function AllList() {
           // loading
         />
       </Flex>
-      <Row gutter={[16, 16]}>
-        {products.map((product) => (
-          <Col key={product.id} xs={24} sm={12} lg={6}>
-            <Link to={`/all/${product.id}`}>
-              <ProductCard product={product} />
-            </Link>
-          </Col>
-        ))}
-      </Row>
+      <Skeleton
+        active
+        paragraph={{ rows: 5 }}
+        loading={isLoading}
+        title={false}
+      >
+        {products && products.length > 0 ? (
+          <Row gutter={[16, 16]}>
+            {products.map((product) => (
+              <Col key={product.id} xs={24} sm={12} lg={6}>
+                <Link to={`/all/${product.id}`}>
+                  <ProductCard product={product} />
+                </Link>
+              </Col>
+            ))}
+          </Row>
+        ) : (
+          <Empty />
+        )}
+      </Skeleton>
       <Pagination align="center" defaultCurrent={1} total={10} />
     </Flex>
   );

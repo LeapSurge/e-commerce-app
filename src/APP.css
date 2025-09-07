@@ -19,14 +19,14 @@
 /* .card--body {
   background-color: gray;
 } */
-.boot-card:hover .card--cover {
+.product-card:hover .card--cover {
   box-shadow: 2px 2px 6px rgba(9, 9, 80, 0.2);
 }
-.boot-card:hover .ant-card-meta-title {
+.product-card:hover .ant-card-meta-title {
   color: rgb(45, 45, 165);
   text-decoration: underline;
 }
-.boot-card:hover .ant-card-meta-description {
+.product-card:hover .ant-card-meta-description {
   text-decoration: underline;
 }
 
