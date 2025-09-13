@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import fetchProductsAPI from "../apis/fetchProductsAPI";
+import fetchProductsApi from "../apis/fetchProductsApi";
 
 export default function useProducts() {
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +54,7 @@ export default function useProducts() {
             queryParams.append("q", query);
           }
 
-          setProducts(await fetchProductsAPI(searchParams));
+          setProducts(await fetchProductsApi(searchParams));
         }
       } catch (e) {
         if (!ignore) {

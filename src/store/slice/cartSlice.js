@@ -22,7 +22,7 @@ export const cartSlice = createSlice({
       }
       state.totalAmount += action.payload.price;
       state.totalQuantity++;
-      console.log(state.items);
+      // console.log(state.items);
     },
 
     incrementItemQuantity: (state, action) => {
