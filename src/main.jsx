@@ -1,16 +1,21 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { store } from "./store/store";
 import { Provider } from "react-redux";
+import { App, ConfigProvider } from "antd";
 import "./APP.css";
+import { store } from "./store/store";
 import Root from "./routes/root";
 import Index from "./routes/index";
 import All from "./routes/all";
-import AllList from "./routes/all-list";
+import AllList from "./routes/allList";
 import Details, { loader as getBoot } from "./routes/details";
 import Cart from "./routes/cart";
-import { App, ConfigProvider } from "antd";
+import Register from "./routes/register";
+import Login from "./routes/login";
+import ProtectedRoute from "./routes/protectedRoute";
+import Profile from "./routes/profile";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -28,6 +33,22 @@ const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
+      },
+      {
+        path: "register",
+        element: <Register />,
+      },
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "profile",
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

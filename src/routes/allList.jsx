@@ -9,9 +9,10 @@ import {
   Input,
   Skeleton,
   Empty,
+  Result,
 } from "antd";
-import ProductCard from "../components/productcard";
-import useProducts from "../hooks/useproducts";
+import ProductCard from "../components/productCard";
+import useProducts from "../hooks/useProducts";
 import { useDebouncedSearch } from "../hooks/useDebouncedSearch";
 
 export default function AllList() {
@@ -98,7 +99,9 @@ export default function AllList() {
         loading={isLoading}
         title={false}
       >
-        {products && products.length > 0 ? (
+        {error ? (
+          <Result status="error" title={error} />
+        ) : products && products.length > 0 ? (
           <Row gutter={[16, 16]}>
             {products.map((product) => (
               <Col key={product.id} xs={24} sm={12} lg={6}>
